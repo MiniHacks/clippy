@@ -1,0 +1,7 @@
+{
+  "name": "backend",
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
+    "node-ffmpeg-concat": "^2024.3.2"
+  }
+}

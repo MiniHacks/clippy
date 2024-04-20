@@ -1,0 +1,22 @@
+1) Concatenate a list of videos into one
+
+ffmpeg -f concat -safe 0 -i tojoin.txt -c copy output.mp4
+
+// Format of tojoin.txt:
+file 'file0.MP4'
+file 'file1.MP4'
+file 'etc..
+
+2) Scale down 4k video to
+
+// 2.7k / 2704p
+ffmpeg -i output.mp4 -vf scale=2704:1520 -c:v libx264 -crf 20 -preset slow smaller_2704p.mp4
+
+// 1440p
+ffmpeg -i output.mp4 -vf scale=1920:1440 -c:v libx264 -crf 20 -preset slow smaller_1440p.mp4
+
+// 1080p
+ffmpeg -i output.mp4 -vf scale=1920:1080 -c:v libx264 -crf 20 -preset slow smaller_1080p.mp4
+
+// 720p
+ffmpeg -i output.mp4 -vf scale=1280:720 -c:v libx264 -crf 20 -preset slow smaller_720p.mp4
