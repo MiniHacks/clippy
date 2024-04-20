@@ -83,6 +83,9 @@ web_modules/
 .env.production.local
 .env.local
 
+# python env
+env
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache
@@ -247,3 +250,5 @@ fabric.properties
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/webstorm+all,yarn,node
+**/frames/*
+**/venv/*

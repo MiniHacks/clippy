@@ -1,7 +1,6 @@
 import Header from "@/components/ui/header";
 import Prompt from "@/components/ui/prompt";
-import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
-import {Upload, Video} from "lucide-react";
+import UploadBox from "@/components/ui/upload";
 
 export default function Clips() {
     return (
@@ -12,20 +11,10 @@ export default function Clips() {
                     <h1 className="text-4xl font-medium">
                         Clips Editor
                     </h1>
-                    <Card className="border-dashed pt-8 pb-4">
-                        <CardHeader className="flex flex-col items-center text-center">
-                            <Upload className="h-6 w-6 text-muted-foreground"/>
-                            <CardTitle className="text-xl font-medium text-slate-600">
-                                Upload some Clips
-                            </CardTitle>
-                            <div className="text-sm w-[254px] text-wrap text-slate-400">
-                                Not sure whether we're dragging these
-                                or gathering them from the existing upload
-                                UI.
-                            </div>
-                        </CardHeader>
-                        <CardContent></CardContent>
-                    </Card>
+                    <UploadBox
+                        title="Add Clips"
+                        desc="Click to browse or drag & drop short video clips to be composed together."
+                    />
                     <Prompt/>
                 </div>
             </main>

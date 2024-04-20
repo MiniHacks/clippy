@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import UploadBox from "@/components/ui/upload";
 import Header from "@/components/ui/header";
 
 import {
@@ -16,7 +17,6 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 
 import { SquarePlus } from 'lucide-react';
-
 
 function getVideoCover(file : File, seekTo = 0.0) : Promise<Blob | null> {
   console.log("getting video cover for file: ", file);
@@ -140,50 +140,52 @@ export default function Upload() {
     <>
       <Header route="Video Upload"/>
         <main className="flex flex-col items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
-
-              <div {...getRootProps()} className={`w-full transition-colors duration-300 ease-in-out rounded ${isDragActive ? 'bg-green-100' : 'bg-white'}`}>
+            <div {...getRootProps()}
+                 className={`w-full transition-colors duration-300 ease-in-out rounded ${isDragActive ? 'bg-green-100' : 'bg-white'}`}>
                 <input {...getInputProps()} />
-                <CardHeader>
-                  <CardTitle>Upload Videos Here</CardTitle>
-                  <CardDescription>Click or Drag N' Drop to Add Videos</CardDescription>
-                </CardHeader>
+                <UploadBox
+                    title="Upload"
+                    desc="Click to browse for videos, or drag and drop files here."
+                />
+            </div>
 
-              </div>
-
-              {videoThumbnails && videoThumbnails.map((file, index) => (
+            {videoThumbnails && videoThumbnails.map((file, index) => (
                 <>
-                  {file && file.thumbnail && (
-                    <Card className="flex-shrink-0 w-full">
-                      <div key={index} className="flex items-center space-x-4 rounded relative">
-                        <img src={URL.createObjectURL(file.thumbnail)} alt={`Cover of video ${index + 1}`} className="w-[200px] p-4 rounded"/>
-                        <div className="absolute top-0 bg-black bg-opacity-50 text-white p-1 m-5 text-xs rounded">
-                          {formatDuration(file.duration)}
-                        </div>
+                    {file && file.thumbnail && (
+                        <Card className="flex-shrink-0 w-full">
+                            <div key={index} className="flex items-center space-x-4 rounded relative">
+                                <img src={URL.createObjectURL(file.thumbnail)} alt={`Cover of video ${index + 1}`}
+                                     className="w-[200px] p-4 rounded"/>
+                                <div
+                                    className="absolute top-0 bg-black bg-opacity-50 text-white p-1 m-5 text-xs rounded">
+                                    {formatDuration(file.duration)}
+                                </div>
 
-                        <div>
-                          <p className="text-md pt-1">{file.name}</p>
-                          <p className="text-gray-600">{formatFileSize(file.size)}</p>
+                                <div>
+                                    <p className="text-md pt-1">{file.name}</p>
+                                    <p className="text-gray-600">{formatFileSize(file.size)}</p>
 
-                          <div className="w-full h-2 bg-gray-200 rounded mt-2">
-                            <div className="h-full bg-black rounded" style={{ width: `${(1 / 5) * 100}%` }}></div>
-                          </div>
-                        </div>
+                                    <div className="w-full h-2 bg-gray-200 rounded mt-2">
+                                        <div className="h-full bg-black rounded"
+                                             style={{width: `${(1 / 5) * 100}%`}}></div>
+                                    </div>
+                                </div>
 
-                        <div className="absolute top-0 right-0 text-xl p-2">&#8942;</div>
-                      </div>
-                    </Card>
-                  )}
+                                <div className="absolute top-0 right-0 text-xl p-2">&#8942;</div>
+                            </div>
+                        </Card>
+                    )}
                 </>
-              ))}
+            ))}
 
 
         </main>
-        
-      </>
 
-    // <>
-    //   <Header route="Video Upload"/>
-    //     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+    </>
+
+      // <>
+      //   <Header route="Video Upload"/>
+      //     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
     //       <Card>
     //         <CardHeader>
     //           <CardTitle>Upload Video</CardTitle>
