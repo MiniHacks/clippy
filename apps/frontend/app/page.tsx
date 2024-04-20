@@ -1,7 +1,7 @@
 import {
   Video,
   File,
-  ListFilter, Search,
+  ListFilter,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -28,16 +28,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList, BreadcrumbPage,
-  BreadcrumbSeparator
-} from "@/components/ui/breadcrumb";
 import Link from "next/link";
-import {Input} from "@/components/ui/input";
-import Image from "next/image";
 import Header from "@/components/ui/header";
 
 export default function Dashboard() {
