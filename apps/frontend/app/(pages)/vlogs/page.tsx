@@ -1,5 +1,6 @@
 import Header from "@/components/ui/header";
 import Prompt from "@/components/ui/prompt";
+import UploadBox from "@/components/ui/upload";
 export default function Vlog() {
     return (
         <>
@@ -9,9 +10,10 @@ export default function Vlog() {
                     <h1 className="text-4xl font-medium">
                         Highlights Editor
                     </h1>
-                    <h2>
-                        (TODO: some get from library/selection component here)
-                    </h2>
+                    <UploadBox
+                        title="Add Videos"
+                        desc="Click to browse or drag & drop long videos to be made into a highlight reel."
+                    />
                     <Prompt/>
                 </div>
             </main>
