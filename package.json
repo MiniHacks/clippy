@@ -10,5 +10,8 @@
     "apps/*"
   ],
   "license": "MIT",
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "dependencies": {
+    "react-dropzone": "^14.2.3"
+  }
 }
