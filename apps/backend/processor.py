@@ -2,19 +2,6 @@ import os
 import subprocess
 
 
-def ffmpeg(args):
-    """
-    call ffmpeg with the given arguments
-    """
-    subprocess.run(["ffmpeg", "-y"] + args)
-
-def ffmpeg_concat(args):
-    """
-    call ffmpeg-concat with the given arguments
-    """
-    subprocess.run(["ffmpeg-concat"] + args)
-
-
 class Processor:
     def __init__(self, _dir="videos"):
         self.dir = _dir
