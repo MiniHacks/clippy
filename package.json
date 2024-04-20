@@ -1,0 +1,14 @@
+{
+  "name": "clippie",
+  "private": true,
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "yarn workspaces foreach -Api run dev"
+  },
+  "workspaces": [
+    "apps/*"
+  ],
+  "license": "MIT",
+  "packageManager": "yarn@4.0.2"
+}
