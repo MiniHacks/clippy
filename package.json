@@ -3,12 +3,27 @@
   "private": true,
   "version": "1.0.0",
   "main": "index.js",
+  "husky": {
+    "hooks": {
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
+    }
+  },
   "scripts": {
-    "dev": "yarn workspaces foreach -Api run dev"
+    "dev": "yarn workspaces foreach -Api run dev",
+    "postinstall": "husky install"
   },
   "workspaces": [
     "apps/*"
   ],
   "license": "MIT",
-  "packageManager": "yarn@4.0.2"
+  "packageManager": "yarn@4.0.2",
+  "devDependencies": {
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
+    "commitlint-plugin-function-rules": "^1.7.1",
+    "env-cmd": "^10.1.0",
+    "husky": "^8.0.0",
+    "nodemon": "^2.0.19",
+    "prettier": "^2.5.1"
+  }
 }
