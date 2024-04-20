@@ -29,7 +29,7 @@ class Processor:
             audio_file
         ])
 
-    def generate_captions(self, words, time_gap=1000, max_length=4):
+    def generate_captions(self, words, time_gap=1000, max_length=3):
         clauses = []
         current_clause = []
 
@@ -41,7 +41,13 @@ class Processor:
                 # End clause if conditions met
                 clause_text = ' '.join([w.text for w in current_clause])
                 start_time = current_clause[0].start
-                end_time = current_clause[-1].end
+
+                if word.start - current_clause[-1].end < time_gap:
+                    # If the gap is less than time_gap, set the previous clause's end_time to the current start_time
+                    end_time = word.start
+                else:
+                    end_time = current_clause[-1].end
+
                 clauses.append({ 'text': clause_text, 'start': start_time, 'end': end_time})
                 current_clause = [word] if i != len(words) - 1 else []
             else:
@@ -73,7 +79,7 @@ class Processor:
 
             ffmpeg([
                 "-i", prev_file if i > 0 else video_file,
-                "-vf", f"drawtext=enable='between(t,{start_time},{end_time})':text={shlex.quote(text)}:\/fonts\/ProximaSoft-Regular.otf:fontcolor=white:fontsize=24:box=1:boxcolor=black@0.5:boxborderw=5:x=(w-text_w)/2:y=(h-text_h)/2",
+                "-vf", f"drawtext=enable='between(t,{start_time},{end_time})':text={shlex.quote(text)}:fontfile=/fonts/ProximaSoft-Regular.otf:fontcolor=white:fontsize=24:borderw=3:bordercolor=black:x=(w-text_w)/2:y=(h-text_h)/2",
                 "-codec:a", "copy",
                 output_file if i == len(captions) - 1 else temp_file
             ])          
@@ -90,7 +96,7 @@ class Processor:
 
         audiofile = f"{self.dir}/tmp/audio.mp3"
 
-        # self.extract_audio(infile, audiofile)
+        self.extract_audio(infile, audiofile)
 
         transcriber = aai.Transcriber()
         transcript = transcriber.transcribe(audiofile)
@@ -99,16 +105,14 @@ class Processor:
             print(transcript.error)
         else:
             captions = self.generate_captions(transcript.words)
+            
+            print(f"Captions generated: {captions}")
 
             start_time = time.time()
             self.overlay_captions(infile, captions, outfile)
             end_time = time.time()
 
             print(f"Time taken to overlay captions: {end_time - start_time} seconds")
-
-
-        
-        
     
     
 if __name__ == "__main__":
@@ -116,6 +120,6 @@ if __name__ == "__main__":
 
     processor = Processor()
 
-    processor.caption("testvideo-short")
+    processor.caption("shortest-video")
 
     preview("videos/output.mp4")
