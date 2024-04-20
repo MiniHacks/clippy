@@ -1,12 +1,21 @@
 from processor import Processor
+from utils import preview
 
 
 def main():
-    input_file = "input/dinnerandline.MP4"
+    input_file = "dinnerandline"
 
-    processor = Processor(input_file, "output/")
+    processor = Processor()
 
-    processor.clip(0, 5, "dinner")
+    a = processor.clip(input_file, 0, 5, "a")
+
+    b = processor.clip(input_file, 10, 15, "b")
+
+    processor.cross_fade(a, b, "output")
+
+    # processor.combine(a, b, output="output")
+    # preview the output
+    preview("videos/output.mp4")
 
 
 if __name__ == "__main__":
