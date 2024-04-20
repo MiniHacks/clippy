@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import Header from "@/components/ui/header";
 
 function getVideoCover(file : File, seekTo = 0.0) : Promise<Blob | null> {
   console.log("getting video cover for file: ", file);
@@ -53,11 +54,12 @@ function getVideoCover(file : File, seekTo = 0.0) : Promise<Blob | null> {
   });
 }
 
-export default function Test() {
+export default function Upload() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[] | undefined>(undefined);
   const [videoCovers, setVideoCovers] = useState<(Blob | null)[] | undefined>(undefined);
   // const [previewUrl, setPreviewUrl] = useState<string[] | undefined>(undefined);
+
 
   const getVideoCovers = async () => {
     if (selectedFiles) {
@@ -90,39 +92,44 @@ export default function Test() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen py-2">
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        <div className="flex flex-col items-center justify-center min-h-screen py-2">
-          <div className="p-12 bg-white rounded shadow-md w-full max-w-2xl">
-            <h2 className="text-2xl font-bold mb-2">Upload Video</h2>
+      <>
+          <Header route="Upload"/>
+          <div className="flex flex-col items-center justify-center min-h-screen py-2">
+              {isLoading ? (
+                  <div>Loading...</div>
+              ) : (
+                  <div className="flex flex-col items-center justify-center min-h-screen py-2">
+                      <div className="p-12 bg-white rounded shadow-md w-full max-w-2xl">
+                          <h2 className="text-2xl font-bold mb-2">Upload Video</h2>
 
-            <div className="flex flex-row flex-wrap">
-              {videoCovers && videoCovers.map((file, index) => (
-                <div key={index} className="w-1/4 p-1">
-                  {file && <img src={URL.createObjectURL(file)} alt={`Cover of video ${index + 1}`} />}
-                </div>
-              ))}
-            </div>
-            <div {...getRootProps()} className="border-dashed border-2 border-gray-400 py-2 px-4 text-center my-3">
-              <input {...getInputProps()} />
-              <p>Drag 'n' drop some files here, or click to select files</p>
-            </div>
-            {/* {previewUrl && (
+                          <div className="flex flex-row flex-wrap">
+                              {videoCovers && videoCovers.map((file, index) => (
+                                  <div key={index} className="w-1/4 p-1">
+                                      {file &&
+                                          <img src={URL.createObjectURL(file)} alt={`Cover of video ${index + 1}`}/>}
+                                  </div>
+                              ))}
+                          </div>
+                          <div {...getRootProps()}
+                               className="border-dashed border-2 border-gray-400 py-2 px-4 text-center my-3">
+                              <input {...getInputProps()} />
+                              <p>Drag 'n' drop some files here, or click to select files</p>
+                          </div>
+                          {/* {previewUrl && (
               <div className="mt-4">
                 <video src={previewUrl} controls width="100%" />
               </div>
             )} */}
-            <button
-              onClick={handleUpload}
-              className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
-            >
-              Upload
-            </button>
+                          <button
+                              onClick={handleUpload}
+                              className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 mt-4"
+                          >
+                              Upload
+                          </button>
+                      </div>
+                  </div>
+              )}
           </div>
-        </div>
-      )}
-    </div>
+      </>
   )
 }
