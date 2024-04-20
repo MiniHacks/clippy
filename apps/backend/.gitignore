@@ -19,3 +19,5 @@ pip-selfcheck.json
 
 input/*
 output/*
+
+__pycache__/

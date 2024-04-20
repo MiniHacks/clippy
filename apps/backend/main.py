@@ -1,14 +1,13 @@
-import subprocess
-
-print("hi sasha :)")
-
-
-def ffmpeg(args):
-    """
-    call ffmpeg with the given arguments
-    """
-    subprocess.run(["ffmpeg"] + args)
+from processor import Processor
 
 
 def main():
-    ffmpeg(["-i", "input.mp4", "output.mp4"])
+    input_file = "input/dinnerandline.MP4"
+
+    processor = Processor(input_file, "output/")
+
+    processor.clip(0, 5, "dinner")
+
+
+if __name__ == "__main__":
+    main()
