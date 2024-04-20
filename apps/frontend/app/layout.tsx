@@ -3,6 +3,9 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import {Film, Home, Clapperboard, Upload} from "lucide-react";
 import Navlink from "@/components/ui/_nav/navlink";
+
+import { Toaster } from "@/components/ui/toaster"
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -42,6 +45,7 @@ export default function RootLayout({
         {children}
       </div>
     </div>
+    <Toaster />
     </body>
     </html>
   );
