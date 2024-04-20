@@ -3,15 +3,9 @@ import Link from "next/link"
 import {
   Video,
   File,
-  Home,
-  LineChart,
   ListFilter,
-  Package,
   Film,
-  PanelLeft,
   Search,
-  ShoppingCart,
-  Users2,
 } from "lucide-react"
 
 import {
@@ -42,7 +36,6 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Progress } from "@/components/ui/progress"
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import {
   Tabs,
   TabsContent,
@@ -51,6 +44,28 @@ import {
 } from "@/components/ui/tabs"
 
 export default function Dashboard() {
+  // FIXME: we can change this when the endpoint actually exists
+  const projects = [
+        {
+        "project" : "Project Name",
+        "title" : "Preview Content",
+        "date" : "2024/04/19",
+        "size" : "5.3 GB"
+        },
+        {
+        "project" : "Project Name",
+        "title" : "Preview Content",
+        "date" : "2024/04/19",
+        "size" : "5.3 GB"
+        },
+        {
+        "project" : "Project Name",
+        "title" : "Preview Content",
+        "date" : "2024/04/19",
+        "size" : "5.3 GB"
+        }
+  ];
+
   return (
       <div className="flex min-h-screen w-full flex-col bg-muted/40">
         <aside className="fixed inset-y-0 left-0 z-10 hidden w-14 flex-col border-r bg-background sm:flex">
@@ -200,39 +215,24 @@ export default function Dashboard() {
                 <TabsContent value="projects" className="flex">
                   <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4">
                     {/*FIXME: dynamically add cards once endpoint is set up */}
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Project Name</CardTitle>
-                        <Video className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">Preview Content</div>
-                        <p className="text-xs text-muted-foreground">2024/04/19</p>
-                        <p className="text-xs text-muted-foreground">5.3 GB</p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                        <Video className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">Preview Content</div>
-                        <p className="text-xs text-muted-foreground">2024/04/19</p>
-                        <p className="text-xs text-muted-foreground">5.3 GB</p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                        <Video className="h-4 w-4 text-muted-foreground" />
-                      </CardHeader>
-                      <CardContent>
-                        <div className="text-2xl font-bold">Preview Content</div>
-                        <p className="text-xs text-muted-foreground">2024/04/19</p>
-                        <p className="text-xs text-muted-foreground">5.3 GB</p>
-                      </CardContent>
-                    </Card>
+                    {projects &&
+                        projects.map((project) => {
+                          return (
+                              <Card>
+                                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                  <CardTitle className="text-sm font-medium">{project.project}</CardTitle>
+                                  <Video className="h-4 w-4 text-muted-foreground"/>
+                                </CardHeader>
+                                <CardContent>
+                                  <div className="text-xl font-bold pb-4">{project.title}</div>
+                                  <div className="flex flex-row justify-between">
+                                    <p className="text-xs text-muted-foreground">{project.date}</p>
+                                    <p className="text-xs text-muted-foreground">{project.size}</p>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                          );
+                        })}
                   </div>
                 </TabsContent>
               </Tabs>
