@@ -68,19 +68,46 @@ function getVideoCover(file : File, seekTo = 0.0) : Promise<Blob | null> {
   });
 }
 
+function getVideoDuration(file: Blob): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.onloadedmetadata = function() {
+      window.URL.revokeObjectURL(video.src);
+      resolve(video.duration);
+    };
+    video.onerror = function() {
+      reject('Invalid video. Please select a valid video file.');
+    };
+    video.src = URL.createObjectURL(file);
+  });
+}
+
+function formatDuration(duration: number): string {
+  const minutes = Math.floor(duration / 60);
+  const seconds = Math.floor(duration % 60);
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`;
+}
+
+function formatFileSize(size: number): string {
+  const i = Math.floor(Math.log(size) / Math.log(1024));
+  return (+((size / Math.pow(1024, i)).toFixed(2))) + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+}
+
 export default function Upload() {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<File[] | undefined>(undefined);
-  const [videoThumbnails, setVideoThumbnails] = useState<{ thumbnail: Blob | null, name: string }[] | undefined>(undefined);
+  const [videoThumbnails, setVideoThumbnails] = useState<{ thumbnail: Blob | null, name: string, duration: number, size: number }[] | undefined>(undefined);
 
   const { toast } = useToast();
   const getVideoCovers = async () => {
     if (selectedFiles) {
-      const videoThumbnails: Promise<{ thumbnail: Blob | null, name: string }>[] = selectedFiles.map(async (file: File) => {
+      const videoThumbnails: Promise<{ thumbnail: Blob | null, name: string, duration: number, size: number }>[] = selectedFiles.map(async (file: File) => {
         const thumbnail = await getVideoCover(file, 1.5);
-        return { thumbnail, name: file.name };
+        const duration = await getVideoDuration(file);
+        const size = file.size;
+        return { thumbnail, name: file.name, duration, size };
       });
-      const results: { thumbnail: Blob | null, name: string }[] = await Promise.all(videoThumbnails);
+      const results: { thumbnail: Blob | null, name: string, duration: number, size: number }[] = await Promise.all(videoThumbnails);
       setVideoThumbnails(results);
       console.log(results)
       toast({
@@ -110,47 +137,88 @@ export default function Upload() {
 
   return (
 
-    <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-1/2">
-          <CardHeader>
-            <CardTitle>Upload Video</CardTitle>
-            <CardDescription>Click or Drag N' Drop Below to Add Videos</CardDescription>
-          </CardHeader>
-          
-          {isLoading ? (
-            <div>Loading...</div>
-          ) : (
-            <>
-              <div {...getRootProps()} className={`transition-colors duration-300 ease-in-out text-center mx-3 mb-2 -mt-3 py-3 rounded ${isDragActive ? 'bg-green-100' : 'bg-white'}`}>
+    <>
+      <Header route="Video Upload"/>
+        <main className="flex flex-col items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
+
+              <div {...getRootProps()} className={`w-full transition-colors duration-300 ease-in-out rounded ${isDragActive ? 'bg-green-100' : 'bg-white'}`}>
                 <input {...getInputProps()} />
-                <CardContent className="min-h-[200px]">
-                  <div className="flex flex-row flex-wrap">
-                    {videoThumbnails && videoThumbnails.map((file, index) => (
-                      <div key={index} className="w-1/4 p-1 rounded">
-                        {file && file.thumbnail && <img src={URL.createObjectURL(file.thumbnail)} alt={`Cover of video ${index + 1}`} className="rounded"/>}
-                        <p className="text-center text-xs pt-1">{file.name}</p>
-                      </div>
-                    ))}
-                  </div>
-                  {/* {!videoThumbnails && (
-                    <div className="flex flex-col items-center justify-center h-full">
-                      <SquarePlus size={48} />
-                      <p className="text-xs">No videos at the moment...</p>
-                    </div>
-                  )} */}
-                </CardContent>
+                <CardHeader>
+                  <CardTitle>Upload Videos Here</CardTitle>
+                  <CardDescription>Click or Drag N' Drop to Add Videos</CardDescription>
+                </CardHeader>
+
               </div>
 
-                          <CardFooter className="flex justify-between">
-                              <Button
-                                  onClick={handleUpload}
-                              >
-                                  Upload
-                              </Button>
-                          </CardFooter>
-                      </>
+              {videoThumbnails && videoThumbnails.map((file, index) => (
+                <>
+                  {file && file.thumbnail && (
+                    <Card className="flex-shrink-0 w-full">
+                      <div key={index} className="flex items-center space-x-4 rounded relative">
+                        <img src={URL.createObjectURL(file.thumbnail)} alt={`Cover of video ${index + 1}`} className="w-[200px] p-4 rounded"/>
+                        <div className="absolute top-0 bg-black bg-opacity-50 text-white p-1 m-5 text-xs rounded">
+                          {formatDuration(file.duration)}
+                        </div>
+
+                        <div>
+                          <p className="text-md pt-1">{file.name}</p>
+                          <p className="text-gray-600">{formatFileSize(file.size)}</p>
+
+                          <div className="w-full h-2 bg-gray-200 rounded mt-2">
+                            <div className="h-full bg-black rounded" style={{ width: `${(1 / 5) * 100}%` }}></div>
+                          </div>
+                        </div>
+
+                        <div className="absolute top-0 right-0 text-xl p-2">&#8942;</div>
+                      </div>
+                    </Card>
                   )}
-              </Card>
-          </div>
+                </>
+              ))}
+
+
+        </main>
+        
+      </>
+
+    // <>
+    //   <Header route="Video Upload"/>
+    //     <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8 lg:grid-cols-3 xl:grid-cols-3">
+    //       <Card>
+    //         <CardHeader>
+    //           <CardTitle>Upload Video</CardTitle>
+    //           <CardDescription>Click or Drag N' Drop Below to Add Videos</CardDescription>
+    //         </CardHeader>
+            
+    //         {isLoading ? (
+    //           <div>Loading...</div>
+    //         ) : (
+    //           <>
+    //             <div {...getRootProps()} className={`transition-colors duration-300 ease-in-out text-center mx-3 mb-2 -mt-3 py-3 rounded ${isDragActive ? 'bg-green-100' : 'bg-white'}`}>
+    //               <input {...getInputProps()} />
+    //               <CardContent className="min-h-[200px]">
+    //                 <div className="flex flex-row flex-wrap">
+    //                   {videoThumbnails && videoThumbnails.map((file, index) => (
+    //                     <div key={index} className="w-1/4 p-1 rounded">
+    //                       {file && file.thumbnail && <img src={URL.createObjectURL(file.thumbnail)} alt={`Cover of video ${index + 1}`} className="rounded"/>}
+    //                       <p className="text-center text-xs pt-1">{file.name}</p>
+    //                     </div>
+    //                   ))}
+    //                 </div>
+    //               </CardContent>
+    //             </div>
+    //             <CardFooter className="flex justify-between">
+    //               <Button
+    //                   onClick={handleUpload}
+    //               >
+    //                   Upload
+    //               </Button>
+    //             </CardFooter>
+    //           </>
+    //         )}
+    //       </Card>
+    //     </main>
+        
+    //   </>
   )
 }
