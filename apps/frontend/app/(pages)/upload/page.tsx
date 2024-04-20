@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import Header from "@/components/ui/header";
 
 import {
   Card,
@@ -108,7 +109,15 @@ export default function Upload() {
   }
 
   return (
+      <><Header route="Upload"/>
+          <div className="flex items-center justify-center min-h-screen">
+              <Card className="w-1/2">
+                  <CardHeader>
+                      <CardTitle>Upload Video</CardTitle>
+                      <CardDescription>Click or Drag N' Drop Below to Add Videos</CardDescription>
+                  </CardHeader>
 
+<<<<<<< HEAD
     <div className="flex items-center justify-center min-h-screen">
         <Card className="w-1/2">
           <CardHeader>
@@ -137,18 +146,46 @@ export default function Upload() {
                     </div>
                   )}
                 </CardContent>
+=======
+                  {isLoading ? (
+                      <div>Loading...</div>
+                  ) : (
+                      <>
+                          <div {...getRootProps()}
+                               className={`transition-colors duration-300 ease-in-out text-center mx-3 mb-2 -mt-3 py-3 rounded ${isDragActive ? 'bg-green-100' : 'bg-white'}`}>
+                              <input {...getInputProps()} />
+                              <CardContent className="min-h-[200px]">
+                                  <div className="flex flex-row flex-wrap">
+                                      {videoThumbnails && videoThumbnails.map((file, index) => (
+                                          <div key={index} className="w-1/4 p-1 rounded">
+                                              {file && file.thumbnail && <img src={URL.createObjectURL(file.thumbnail)}
+                                                                              alt={`Cover of video ${index + 1}`}
+                                                                              className="rounded"/>}
+                                              <p className="text-center text-xs pt-1">{file.name}</p>
+                                          </div>
+                                      ))}
+                                  </div>
+                                  {/* {!videoThumbnails && (
+              <div className="flex flex-col items-center justify-center h-full">
+                <SquarePlus size={48} />
+                <p className="text-xs">No videos at the moment...</p>
+>>>>>>> 2d643d39c8987d6f5149c324398e526639840328
               </div>
+            )} */}
+                              </CardContent>
+                          </div>
 
-                <CardFooter className="flex justify-between">
-                  <Button 
-                    onClick={handleUpload}
-                  >
-                    Upload
-                  </Button>
-                </CardFooter>
-            </>
-          )}
-        </Card>
-    </div>
+                          <CardFooter className="flex justify-between">
+                              <Button
+                                  onClick={handleUpload}
+                              >
+                                  Upload
+                              </Button>
+                          </CardFooter>
+                      </>
+                  )}
+              </Card>
+          </div>
+      </>
   )
 }
