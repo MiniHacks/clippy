@@ -1,6 +1,8 @@
 import os
 import subprocess
 
+from utils import ffmpeg
+
 
 class Processor:
     def __init__(self, _dir="videos"):
