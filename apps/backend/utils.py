@@ -31,11 +31,12 @@ def ffmpeg_concat(args):
     subprocess.run(["ffmpeg-concat"] + args)
 
 
-def hash_video(file):
+def hash_video(filepath):
     """
     fake hash: just a sha256 of the "{filename}{filesize}"
-    :param file:
+    :param filepath: string
     :return:
     """
-
-    return hashlib.sha256(f"{file.filename}{file.filesize}".encode()).hexdigest()
+    filesize = os.stat(filepath).st_size
+    filename = os.path.basename(filepath)
+    return hashlib.sha256(f"{filename}{filesize}".encode()).hexdigest()
