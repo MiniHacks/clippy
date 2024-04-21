@@ -2,7 +2,6 @@
   "name": "backend",
   "packageManager": "yarn@4.0.2",
   "devDependencies": {
-    "editly": "^0.14.2",
     "node-ffmpeg-concat": "^2024.3.2"
   },
   "dependencies": {
