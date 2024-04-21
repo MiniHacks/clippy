@@ -170,7 +170,7 @@ export default function Landing() {
                         </CardItem>
                         <CardItem translateZ="100" className="w-full mt-4">
                             <Image
-                              src=""
+                              src="/preview.jpeg"
                               height="1000"
                               width="1000"
                               className="bg-cyan-100 h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"
