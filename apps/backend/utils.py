@@ -1,3 +1,4 @@
+import hashlib
 import os
 import subprocess
 
@@ -28,3 +29,13 @@ def ffmpeg_concat(args):
     call ffmpeg-concat with the given arguments
     """
     subprocess.run(["ffmpeg-concat"] + args)
+
+
+def hash_video(file):
+    """
+    fake hash: just a sha256 of the "{filename}{filesize}"
+    :param file:
+    :return:
+    """
+
+    return hashlib.sha256(f"{file.filename}{file.filesize}".encode()).hexdigest()
