@@ -1,13 +1,28 @@
-from fastapi import FastAPI, UploadFile
-from videohash import VideoHash
-from gemini import upload_file
-import redis
 import os
-from dotenv import load_dotenv
 from typing import List
+import shutil
+import subprocess
+import json
+
+from fastapi import FastAPI, UploadFile
+from gemini import upload_file
+from pathlib import Path
 from pydantic import BaseModel
+from tqdm import tqdm
+from videohash import VideoHash
+import ffmpeg
+import google.generativeai as genai
+from google.generativeai.types import File
+import redis
+
+from dotenv import load_dotenv
+
+from utils import extract_mp3_from_mp4, convert_to_mkv, get_frames, generate_timestamp, get_audio
 
 load_dotenv()
+
+genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
+model = genai.GenerativeModel('gemini-pro-vision')
 
 r = redis.Redis(
     host=os.environ['REDIS_HOST'],
@@ -23,36 +38,68 @@ app = FastAPI()
 async def read_root():
     return {"Hello": "World"}
 
-
-# do we wanna load in chunks? + md5?
-@app.post("/upload/")
-async def upload_video(upload: UploadFile):
-    file_path = os.path.realpath(upload.file.name)
-    hashed_vid = VideoHash(url=file_path).hash
-
-    if not r.get(hashed_vid):
-        r.set(hashed_vid, file_path)
-        upload_file(file_path)
-    os.rename(file_path, f"./videos/{hashed_vid}")
-
-    return {"filename": upload.filename}
-
 class Clip(BaseModel):
     start_timestamp: str
     end_timestamp: str
     frame_locaion: str
     description: str
-    type: str
     hash: str
+
 
 @app.post("/clips")
 async def extract_clips(hashes: List[str], prompt: str):
-    # go through video and audio
-    # merge windows
-    return {"clips": []}
+    prompt = f"""\
+You are an expert video editor, helping us select clips for a video.
+The client gave you this directive for clip selection: {prompt}
+Double check your work to ensure that the timestamps are correct.
+
+You must return a list of clips formatted as follows:
+[
+    {
+        "start_timestamp": (HH:)MM:SS,
+        "end_timestamp": (HH:)MM:SS,
+        "frame_location": "left" | "middle-left" | "middle" | "middle-right" | "right",
+        "description": str,
+    }, ...
+]
+"""
+    all_clips = []
+    for video_hash in hashes:
+        # video_folder = Path(f"/videos/{video_hash}")
+        # video_path = video_folder / "vid.mp4"
+        # audio_path = video_folder / "audio.mp3"
+        # mkv_path = video_folder / "vid.mkv"
+
+        # convert_to_mkv(video_path, mkv_path)
+        # extract_mp3_from_mp4(video_path, audio_path)
+    
+        frames = get_frames(video_hash)
+        video_request: List[str | File] = [prompt]
+        for sec, frame in enumerate(frames):
+            video_request.append(generate_timestamp(sec))
+            video_request.append(frame)
+        response = model.generate_content(video_request, request_options={"timeout": 600}) # type: ignore
+        clips_from_video = json.loads(response.text)
+
+        audio = get_audio(video_hash)
+        audio_request = [prompt, audio]
+        reponse = model.generate_content(audio_request, request_options={"timeout": 600}) # type: ignore
+        clips_from_audio = json.loads(reponse.text)
+
+        # TODO: merge clips from audio and video gracefully
+        # just using len for now because most tasks are based on either video or audio
+        clips = clips_from_video if len(clips_from_video) > len(clips_from_audio) else clips_from_audio
+        for clip in clips:
+            clip['hash'] = video_hash
+        all_clips += clips
+    return json.dumps(all_clips)
 
 @app.post("/construct_vlog")
-async def construct_vlog(clips: List[Clip]):
+async def construct_vlog(clips: List[Clip], prompt:str):
+    prompt = """\
+You are an expert video editor 
+
+"""
     # prompt for construction + format
     # pass in frames for each clip w numbers
     # get vlog ops
