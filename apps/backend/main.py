@@ -14,6 +14,9 @@ import ffmpeg
 import google.generativeai as genai
 from google.generativeai.types import File
 import redis
+from rq import Queue
+
+
 
 from dotenv import load_dotenv
 
@@ -32,6 +35,7 @@ r = redis.Redis(
     password=os.environ['REDIS_PASSWORD'],
     ssl=True
 )
+q = Queue(connection=r)
 
 app = FastAPI()
 
@@ -92,11 +96,10 @@ You must return a list of clips formatted as follows:
 
 @app.post("/clips")
 async def extract_clips(hashes: List[str], prompt: str):
-    # TODO: update return 
-    return json.dumps(extract_clips_helper(hashes, prompt))
+    q.enqueue(extract_clips_helper, hashes, prompt)
+    return {"status": "job queued"}
 
-@app.post("/construct_vlog")
-async def construct_vlog(hashes: List[str], prompt: str):
+def construct_vlog_helper(hashes: List[str], prompt: str) -> str:
     # TODO: music plan
     clips = extract_clips_helper(hashes, prompt)
     prompt = """\
@@ -151,3 +154,8 @@ Given a list of clips, you must give us a plan formatted as follows:
     final_path = "output.mkv"
     ffmpeg_concat([str(x) for x in clip_order] + ["-c", "copy", final_path])
     return final_path
+
+@app.post("/construct_vlog")
+async def construct_vlog(hashes: List[str], prompt: str):
+    q.enqueue(construct_vlog_helper, hashes, prompt)
+    return {"status": "job queued"}
