@@ -41,7 +41,7 @@ export default function Landing() {
                   className="bg-gradient-to-br from-sky-700 to-slate-800 bg-clip-text text-center text-4xl font-medium tracking-tight text-transparent md:text-7xl"
               >
                   <Button asChild size="lg" className="ml-auto bg-slate-700 text-lg gap-1">
-                      <Link href="/upload" className="tracking-tight">
+                      <Link href="/vlogs" className="tracking-tight">
                           Get started
                           <ArrowUpRight className="h-6 w-6"/>
                       </Link>
