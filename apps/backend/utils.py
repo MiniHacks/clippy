@@ -64,11 +64,12 @@ def get_clip_path(video_hash, start_time, end_time) -> Path:
     # TODO samyok
     raise NotImplementedError()
 
-def hash_video(file):
+def hash_video(filepath):
     """
     fake hash: just a sha256 of the "{filename}{filesize}"
-    :param file:
+    :param filepath: string
     :return:
     """
-
-    return hashlib.sha256(f"{file.filename}{file.filesize}".encode()).hexdigest()
+    filesize = os.stat(filepath).st_size
+    filename = os.path.basename(filepath)
+    return hashlib.sha256(f"{filename}{filesize}".encode()).hexdigest()
