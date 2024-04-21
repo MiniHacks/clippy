@@ -32,7 +32,7 @@ class Clip(BaseModel):
     hash: str
 
 
-async def extract_clips(hashes: List[str], prompt: str):
+def extract_clips(hashes: List[str], prompt: str):
     prompt = f"""\
 You are an expert video editor, helping us select clips for a video.
 The client gave you this directive for clip selection: {prompt}
@@ -43,12 +43,11 @@ You must return a list of clips formatted as follows:
     {
     "start_timestamp": (HH:)MM:SS,
         "end_timestamp": (HH:)MM:SS,
-        "frame_location": "left" | "middle-left" | "middle" | "middle-right" | "right",
         "description": str,
     }, ...
 ]
 """
-    all_clips = []
+    all_clips: List[Clip] = []
     for video_hash in hashes:
         # video_folder = Path(f"/videos/{video_hash}")
         # video_path = video_folder / "vid.mp4"
@@ -75,15 +74,19 @@ You must return a list of clips formatted as follows:
         # just using len for now because most tasks are based on either video or audio
         clips = clips_from_video if len(clips_from_video) > len(clips_from_audio) else clips_from_audio
         for clip in clips:
-            clip['hash'] = video_hash
-            clip['start_timestamp'] = seconds_from_timestamp(clip['start_timestamp'])
-            clip['end_timestamp'] = seconds_from_timestamp(clip['end_timestamp'])
-        all_clips += clips
-    return json.dumps(all_clips)
+            clip_obj = Clip(
+            start_timestamp=seconds_from_timestamp(clip['start_timestamp']),
+            end_timestamp=seconds_from_timestamp(clip['end_timestamp']),
+            description=clip['description'],
+            hash=video_hash
+            )
+            all_clips.append(clip_obj)
+    return all_clips
 
 
-async def construct_vlog(clips: List[Clip], prompt: str):
+def construct_vlog(hashes: List[str], prompt: str):
     # TODO: music plan
+    clips = extract_clips(hashes, prompt)
     prompt = """\
 You are an expert video editor, helping us plan how we're going to combine clips into a video.
 The client gave you this directive for the plan: {prompt}
@@ -99,6 +102,7 @@ Given a list of clips, you must give us a plan formatted as follows:
                     offset: how far into the clip to apply the effect
                 }
             ],
+            area_of_interest: left | middle-left | middle | middle-right | right,
             music_volume: 0-100, 
         }, ...
     ],
