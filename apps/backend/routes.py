@@ -27,7 +27,6 @@ r = redis.Redis(
 class Clip(BaseModel):
     start_timestamp: int
     end_timestamp: int
-    frame_locaion: str
     description: str
     hash: str
 
