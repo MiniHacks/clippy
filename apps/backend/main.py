@@ -1,8 +1,20 @@
-from fastapi import FastAPI, UploadFile
-from videohash import VideoHash
-from gemini import upload_file
-import redis
 import os
+import time
+from typing import List
+
+import google.generativeai as genai
+import redis
+from dotenv import load_dotenv
+from fastapi import FastAPI
+from pydantic import BaseModel
+from rq import Queue
+
+from routes import extract_clips, construct_vlog
+
+load_dotenv()
+
+genai.configure(api_key=os.environ['GOOGLE_API_KEY'])
+model = genai.GenerativeModel('gemini-pro-vision')
 
 r = redis.Redis(
     host=os.environ['REDIS_HOST'],
@@ -10,6 +22,7 @@ r = redis.Redis(
     password=os.environ['REDIS_PASSWORD'],
     ssl=True
 )
+q = Queue(connection=r)
 
 app = FastAPI()
 
@@ -19,15 +32,24 @@ async def read_root():
     return {"Hello": "World"}
 
 
-# do we wanna load in chunks? + md5?
-@app.post("/upload/")
-async def upload_video(upload: UploadFile):
-    file_path = os.path.realpath(upload.file.name)
-    hashed_vid = VideoHash(url=file_path).hash
+class Clip(BaseModel):
+    start_timestamp: int
+    end_timestamp: int
+    frame_locaion: str
+    description: str
+    hash: str
 
-    if not r.get(hashed_vid):
-        await r.set(hashed_vid, file_path)
-        upload_file(file_path)
-    os.rename(file_path, f"./videos/{hashed_vid}")
 
-    return {"filename": upload.filename}
+@app.post("/clips")
+async def route_extract_clips(hashes: List[str], prompt: str):
+    q.enqueue(extract_clips, hashes, prompt)
+    time.sleep(1)
+    return {"status": "success"}
+
+
+# enqueue
+@app.post("/construct_vlog")
+async def route_construct_vlog(clips: List[Clip], prompt: str):
+    q.enqueue(construct_vlog, clips, prompt)
+    time.sleep(1)
+    return {"status": "success"}
