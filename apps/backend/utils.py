@@ -15,7 +15,12 @@ def ffmpeg(args):
     """
     call ffmpeg with the given arguments
     """
-    subprocess.run(["ffmpeg", "-hide_banner", "-loglevel", "error", "-y"] + args)
+    subprocess.run([
+                       "ffmpeg",
+                       "-hide_banner",
+                       # "-loglevel", "error",
+                       "-y"
+                   ] + args)
 
 
 def ffmpeg_concat(args):
