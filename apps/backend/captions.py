@@ -3,15 +3,9 @@ import re
 import time
 import subprocess
 import shlex
-from utils import preview
+from utils import preview, ffmpeg
 
 import assemblyai as aai
-
-def ffmpeg(args):
-    """
-    call ffmpeg with the given arguments
-    """
-    subprocess.run(["ffmpeg", "-y"] + args)
     
 class Processor:
     def __init__(self, _dir="videos"):
