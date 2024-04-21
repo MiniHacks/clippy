@@ -24,11 +24,6 @@ r = redis.Redis(
     ssl=True
 )
 
-
-async def read_root():
-    return {"Hello": "World"}
-
-
 class Clip(BaseModel):
     start_timestamp: int
     end_timestamp: int
