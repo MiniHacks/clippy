@@ -45,7 +45,7 @@ export default function RootLayout({
           </Navlink>
         </nav>
       </aside>
-      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 fixed inset-0 backdrop-blur-2xl bg-[url('../public/gradient.png')] bg-cover bg-center">
+      <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 fixed inset-0 backdrop-blur-2xl bg-[url('../public/gradient.png')] bg-cover bg-center overflow-y-auto">
         {children}
       </div>
     </div>
