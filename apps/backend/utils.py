@@ -46,6 +46,17 @@ def ffmpeg_concat(args):
     subprocess.run(["ffmpeg-concat"] + args)
 
 
+def hash_video(filepath):
+    """
+    fake hash: just a sha256 of the "{filename}{filesize}"
+    :param filepath: string
+    :return:
+    """
+    filesize = os.stat(filepath).st_size
+    filename = os.path.basename(filepath)
+    return hashlib.sha256(f"{filename}{filesize}".encode()).hexdigest()
+
+
 def extract_mp3_from_mp4(video_file_name, audio_file_name):
     ffmpeg(["-i", video_file_name, audio_file_name])
 
@@ -91,13 +102,3 @@ def seconds_from_timestamp(time_string):
 def get_clip_path(video_hash, start_time, end_time) -> Path:
     """returns clip file path from video with given start and end times"""
     return Path(f"videos/{video_hash}/{start_time}-{end_time}.mkv")
-
-def hash_video(filepath):
-    """
-    fake hash: just a sha256 of the "{filename}{filesize}"
-    :param filepath: string
-    :return:
-    """
-    filesize = os.stat(filepath).st_size
-    filename = os.path.basename(filepath)
-    return hashlib.sha256(f"{filename}{filesize}".encode()).hexdigest()
