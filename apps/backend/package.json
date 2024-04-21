@@ -4,5 +4,11 @@
   "devDependencies": {
     "editly": "^0.14.2",
     "node-ffmpeg-concat": "^2024.3.2"
+  },
+  "dependencies": {
+    "clsx": "^2.1.0",
+    "framer-motion": "^11.1.7",
+    "mini-svg-data-uri": "^1.4.4",
+    "tailwind-merge": "^2.3.0"
   }
 }

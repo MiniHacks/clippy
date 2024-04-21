@@ -2060,8 +2060,12 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "backend@workspace:apps/backend"
   dependencies:
+    clsx: "npm:^2.1.0"
     editly: "npm:^0.14.2"
+    framer-motion: "npm:^11.1.7"
+    mini-svg-data-uri: "npm:^1.4.4"
     node-ffmpeg-concat: "npm:^2024.3.2"
+    tailwind-merge: "npm:^2.3.0"
   languageName: unknown
   linkType: soft
 
@@ -2413,6 +2417,7 @@ __metadata:
     commitlint-plugin-function-rules: "npm:^1.7.1"
     env-cmd: "npm:^10.1.0"
     husky: "npm:^8.0.0"
+    mini-svg-data-uri: "npm:^1.4.4"
     nodemon: "npm:^2.0.19"
     prettier: "npm:^2.5.1"
   languageName: unknown
@@ -5728,6 +5733,15 @@ __metadata:
   version: 1.0.1
   resolution: "min-indent@npm:1.0.1"
   checksum: 7e207bd5c20401b292de291f02913230cb1163abca162044f7db1d951fa245b174dc00869d40dd9a9f32a885ad6a5f3e767ee104cf278f399cb4e92d3f582d5c
+  languageName: node
+  linkType: hard
+
+"mini-svg-data-uri@npm:^1.4.4":
+  version: 1.4.4
+  resolution: "mini-svg-data-uri@npm:1.4.4"
+  bin:
+    mini-svg-data-uri: cli.js
+  checksum: 24545fa30b5a45449241bf19c25b8bc37594b63ec06401b3d563bd1c2e8a6abb7c18741f8b354e0064baa63c291be214154bf3a66f201ae71dfab3cc1a5e3191
   languageName: node
   linkType: hard
 
