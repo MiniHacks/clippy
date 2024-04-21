@@ -1,3 +1,4 @@
+import hashlib
 import os
 import subprocess
 from google.generativeai.types import File
@@ -62,3 +63,12 @@ def get_clip_path(video_hash, start_time, end_time) -> Path:
     """returns clip file path from video with given start and end times"""
     # TODO samyok
     raise NotImplementedError()
+
+def hash_video(file):
+    """
+    fake hash: just a sha256 of the "{filename}{filesize}"
+    :param file:
+    :return:
+    """
+
+    return hashlib.sha256(f"{file.filename}{file.filesize}".encode()).hexdigest()
