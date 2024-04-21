@@ -26,7 +26,7 @@ export default function Vlog() {
         hashes: videoThumbnails?.map(({hash}) => hash)
       })
     }).then(res => res.json()).finally(() => {
-      router.push("/");
+      router.push("/dashboard");
     })
   }, [prompt, videoThumbnails, router])
   return (
