@@ -35,7 +35,6 @@ async def read_root():
 class Clip(BaseModel):
     start_timestamp: int
     end_timestamp: int
-    frame_locaion: str
     description: str
     hash: str
 
@@ -49,7 +48,7 @@ async def route_extract_clips(hashes: List[str], prompt: str):
 
 # enqueue
 @app.post("/construct_vlog")
-async def route_construct_vlog(clips: List[Clip], prompt: str):
-    q.enqueue(construct_vlog, clips, prompt)
+async def route_construct_vlog(hashes: List[str], prompt: str):
+    q.enqueue(construct_vlog, hashes, prompt)
     time.sleep(1)
     return {"status": "success"}
