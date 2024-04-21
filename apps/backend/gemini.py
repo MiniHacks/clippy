@@ -6,10 +6,10 @@ import time
 
 import google.generativeai as genai
 import math
-from tqdm import tqdm
+import redis
 from dotenv import load_dotenv
 
-from utils import ffmpeg
+from utils import ffmpeg, hash_video
 
 load_dotenv()  # take environment variables from .env.
 
@@ -18,6 +18,15 @@ genai.configure(api_key=GOOGLE_API_KEY)
 
 FRAME_EXTRACTION_DIRECTORY = "frames"
 FRAME_PREFIX = "_frame"
+
+
+r = redis.Redis(
+    host=os.environ.get('REDIS_HOST'),
+    port=33171,
+    password=os.environ.get('REDIS_PASSWORD'),
+    ssl=True
+)
+
 
 
 def list_models():
@@ -43,16 +52,13 @@ def delete_all_files():
     print("all files deleted")
 
 
-def get_frames():
-    return [f"{FRAME_EXTRACTION_DIRECTORY}/{f}" for f in os.listdir(FRAME_EXTRACTION_DIRECTORY)]
-
-
-uploaded_files = []
+def get_frames(folder):
+    return [f"{folder}/{f}" for f in os.listdir(folder)]
 
 
 def upload_file(file):
     # print("uploading file:", file)
-    uploaded_files.append(file)
+    # uploaded_files.append(file)
     f = genai.upload_file(file)
     # print("file uploaded:", file, f.uri)
     return f.uri
@@ -83,9 +89,9 @@ batch_size = 12
 
 
 # Function to upload a batch of files
-def upload_batch(start, end):
+def upload_batch(folder, start, end):
     print("called with args:", start, end)
-    subprocess.run(["python", "uploader.py", str(start), str(end)])
+    subprocess.run(["python", "uploader.py", folder, str(start), str(end)])
     return f"Batch {start}-{end} uploaded"
 
 
@@ -110,15 +116,16 @@ def delete_many(files):
 
 
 # Function to execute long_running_function 1000 times with a limit of 10 queries per second
-def upload_many(files):
-    pools = math.ceil(len(get_frames()) / batch_size)
+def upload_folder(folder):
+    files = get_frames(folder)
+    pools = math.ceil(len(files) / batch_size)
     semaphore = threading.BoundedSemaphore(batch_size)
 
     # Function to execute the long_running_function with semaphore
     def run_with_semaphore(times):
         [start, end] = times
         with semaphore:
-            return upload_batch(start, end)
+            return upload_batch(folder, start, end)
 
     # List to store results
     results = []
@@ -137,6 +144,7 @@ def upload_many(files):
 # Execute tasks
 
 if __name__ == '__main__':
+    print("hi!")
     # audio = extract_audio("videos/dinnerandline.MP4", "videos/dinner_audio.mp3")
     # print(audio)
     # print(upload_file(audio))
@@ -145,7 +153,7 @@ if __name__ == '__main__':
     # uris = [x.uri for x in f]
     # print(len(uris))
     #
-    delete_many(genai.list_files())
+    # delete_many(genai.list_files())
     # files = get_frames()
     # upload_many(files)
 
