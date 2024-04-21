@@ -17,7 +17,9 @@ import redis
 
 from dotenv import load_dotenv
 
-from utils import extract_mp3_from_mp4, convert_to_mkv, get_frames, generate_timestamp, get_audio
+from utils import (extract_mp3_from_mp4, convert_to_mkv, get_frames, 
+    generate_timestamp, get_audio, seconds_from_timestamp, get_clip_path, 
+    ffmpeg_concat)
 
 load_dotenv()
 
@@ -39,8 +41,8 @@ async def read_root():
     return {"Hello": "World"}
 
 class Clip(BaseModel):
-    start_timestamp: str
-    end_timestamp: str
+    start_timestamp: int
+    end_timestamp: int
     frame_locaion: str
     description: str
     hash: str
@@ -91,19 +93,62 @@ You must return a list of clips formatted as follows:
         clips = clips_from_video if len(clips_from_video) > len(clips_from_audio) else clips_from_audio
         for clip in clips:
             clip['hash'] = video_hash
+            clip['start_timestamp'] = seconds_from_timestamp(clip['start_timestamp'])
+            clip['end_timestamp'] = seconds_from_timestamp(clip['end_timestamp'])
         all_clips += clips
     return json.dumps(all_clips)
 
 @app.post("/construct_vlog")
 async def construct_vlog(clips: List[Clip], prompt:str):
+    # TODO: music plan
     prompt = """\
-You are an expert video editor 
+You are an expert video editor, helping us plan how we're going to combine clips into a video.
+The client gave you this directive for the plan: {prompt}
 
+Given a list of clips, you must give us a plan formatted as follows:
+{
+    outline: [
+        {
+            clip_id: <id>,
+            effects: [
+                { 
+                    type: 
+                    offset: how far into the clip to apply the effect
+                }
+            ],
+            music_volume: 0-100, 
+        }, ...
+    ],
+    music: str
+}
 """
-    # prompt for construction + format
-    # pass in frames for each clip w numbers
-    # get vlog ops
+    request: List[str | File] = [prompt]
+    clip_lookup = {}
+    for clip_id, clip in enumerate(clips, start=1):
+        frames: List[File] = get_frames(clip.hash, 
+                            clip.start_timestamp, 
+                            clip.end_timestamp)
+        request.append(f"clip_id: {clip_id}")
+        for sec, frame in enumerate(frames):
+            request.append(generate_timestamp(sec))
+            request.append(frame)
+        
+        clip_lookup[clip_id] = clip
 
-    # apply vlog ops (simple for now)
-    # return file path for modded vlog?
-    return "nope"
+    response = model.generate_content(request, request_options={"timeout": 600}) # type: ignore
+    response = json.loads(response.text)
+    outline = response['outline']
+    music = response['music']
+
+    clip_order = []
+    for entry in outline:
+        clip_info = clip_lookup[entry['clip_id']]
+
+        clip_path = get_clip_path(clip_info.hash, clip_info.start_timestamp, clip_info.end_timestamp)
+        clip_order.append(clip_path)
+
+    # TODO: apply effects and update json maybe
+    # TODO: update file path to make sense, maybe we need job ids
+    final_path = "output.mkv"
+    ffmpeg_concat([str(x) for x in clip_order] + ["-c", "copy", final_path])
+    return final_path
