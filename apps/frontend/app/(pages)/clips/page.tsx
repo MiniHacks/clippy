@@ -26,9 +26,9 @@ export default function Clips() {
         prompt,
         hashes: videoThumbnails?.map(({hash}) => hash)
       })
-    }).then(res => res.json()).then(() => {
+    }).then(res => res.json()).finally(() => {
       router.push("/");
-    }).catch(console.error).finally(() => setLoading(false))
+    })
   }, [prompt, videoThumbnails, router])
   return (
     <>
