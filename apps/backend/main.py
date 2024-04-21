@@ -3,6 +3,11 @@ from videohash import VideoHash
 from gemini import upload_file
 import redis
 import os
+from dotenv import load_dotenv
+from typing import List
+from pydantic import BaseModel
+
+load_dotenv()
 
 r = redis.Redis(
     host=os.environ['REDIS_HOST'],
@@ -26,8 +31,32 @@ async def upload_video(upload: UploadFile):
     hashed_vid = VideoHash(url=file_path).hash
 
     if not r.get(hashed_vid):
-        await r.set(hashed_vid, file_path)
+        r.set(hashed_vid, file_path)
         upload_file(file_path)
     os.rename(file_path, f"./videos/{hashed_vid}")
 
     return {"filename": upload.filename}
+
+class Clip(BaseModel):
+    start_timestamp: str
+    end_timestamp: str
+    frame_locaion: str
+    description: str
+    type: str
+    hash: str
+
+@app.post("/clips")
+async def extract_clips(hashes: List[str], prompt: str):
+    # go through video and audio
+    # merge windows
+    return {"clips": []}
+
+@app.post("/construct_vlog")
+async def construct_vlog(clips: List[Clip]):
+    # prompt for construction + format
+    # pass in frames for each clip w numbers
+    # get vlog ops
+
+    # apply vlog ops (simple for now)
+    # return file path for modded vlog?
+    return "nope"
