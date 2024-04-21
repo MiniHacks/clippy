@@ -35,9 +35,9 @@
 // }
 
 
-// new md5 hash of "{unix epoch in ms}{file size in bytes}"
+// new md5 hash of "{name}{file size in bytes}"
 export async function hash(file: File) {
-  const buffer = new TextEncoder().encode(`${file.lastModified}${file.size}`)
+  const buffer = new TextEncoder().encode(`${file.name}${file.size}`)
   const hashBuffer = await crypto.subtle.digest('SHA-256', buffer)
   const hashArray = Array.from(new Uint8Array(hashBuffer))
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
