@@ -90,6 +90,7 @@ env
 *.mkv
 *.mp4
 *.jpg
+*.mp3
 
 
 # parcel-bundler cache (https://parceljs.org/)
