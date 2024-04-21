@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import {Film, Home, Clapperboard, Upload} from "lucide-react";
+import {Film, Home, LayoutDashboard, Clapperboard, Upload} from "lucide-react";
 import Navlink from "@/components/ui/_nav/navlink";
 
 import { Toaster } from "@/components/ui/toaster"
@@ -26,6 +26,10 @@ export default function RootLayout({
         <nav className="flex flex-col items-center gap-6 px-2 sm:py-8">
           <Navlink route="/" title="Home">
             <Home className="h-4 w-4 transition-all group-hover:scale-110"/>
+          </Navlink>
+
+          <Navlink route="/dashboard" title="Dashboard">
+            <LayoutDashboard className="h-4 w-4 transition-all group-hover:scale-110"/>
           </Navlink>
 
           <Navlink route="/vlogs" title="Highlights">
