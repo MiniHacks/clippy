@@ -39,10 +39,12 @@ def convert_to_mkv(video_file_name, mkv_file_name):
 
 def get_frames(video_hash) -> List[File]:
     """returns an ordered list of URIs"""
+    # TODO samyok
     raise NotImplementedError()
 
 def get_audio(video_hash) -> File:
     """returns the audio URI"""
+    # TODO samyok
     raise NotImplementedError()
 
 def generate_timestamp(seconds: int) -> str:
