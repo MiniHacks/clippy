@@ -10,7 +10,7 @@ from utils import hash_video
 
 load_dotenv()
 
-r = redis.Redis(
+rd = redis.Redis(
     host=os.environ.get('REDIS_HOST'),
     port=33171,
     password=os.environ.get('REDIS_PASSWORD'),
@@ -31,11 +31,12 @@ processor = Processor()
 
 
 def all_frames_exist(vh):
-    return r.get(vh) is not None
+    print("looking for frames @ " + vh)
+    return rd.get(vh) is not None
 
 
 def create_frames(video_path, vh):
-    if all_frames_exist(video_path):
+    if all_frames_exist(vh):
         print(f"Skipping {video_path}")
         return
 
@@ -65,9 +66,9 @@ def create_frames(video_path, vh):
     ffmpeg(ffmpeg_args)
 
     audio_uri = upload_file(audio_path)
-    r.set(f"{vh}_audio", audio_uri)
+    rd.set(f"{vh}_audio", audio_uri)
 
-    r.set(vh, video_path)
+    rd.set(vh, video_path)
 
 
 for video in os.listdir(VIDEOS_FOLDER):
@@ -75,3 +76,5 @@ for video in os.listdir(VIDEOS_FOLDER):
     vh = hash_video(video_path)
 
     create_frames(video_path, vh)
+
+# rd.connection_pool.disconnect()
